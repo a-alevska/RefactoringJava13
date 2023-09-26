@@ -6,6 +6,7 @@ public class Game {
     private static final Scanner scan = new Scanner(System.in);
     private static final String ENDGAME_TEMPLATE = "\nCreated by Shreyas Saha. Thanks for playing!";
     private final char[] gameField = new char[]{'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    private boolean isGoing = true;
 
     public Game(){
         System.out.println("Enter box number to select. Enjoy!\n");
@@ -39,14 +40,14 @@ public class Game {
         }
     }
 
-    protected GameStatus userWin(){
+    protected void userWin(){
         if(isAllTaken('X')){
-            return GameStatus.WON;
+            isGoing = false;
+            winningStatus(GameStatus.WON);
         }
-        else return GameStatus.GOING;
     }
 
-    protected GameStatus isDraw(){
+    protected void isDraw(){
         boolean boxAvailable = false;
         for(byte i=0; i<9; i++){
             if(gameField[i] != 'X' && gameField[i] != 'O'){
@@ -55,15 +56,16 @@ public class Game {
             }
         }
         if(!boxAvailable){
-            return GameStatus.DRAW;
+            isGoing = false;
+            winningStatus(GameStatus.DRAW);
         }
-        else return GameStatus.GOING;
     }
 
-    protected GameStatus userLose(){
+    protected void userLose(){
         if(isAllTaken('O')){
-            return GameStatus.LOST;
-        }else return GameStatus.GOING;
+            isGoing = false;
+            winningStatus(GameStatus.LOST);
+        }
     }
 
     protected boolean isAllTaken(char symbol){
@@ -88,7 +90,7 @@ public class Game {
 
     protected void gameStatus(){
         boolean boxEmpty = false;
-        while (true) {
+        while (isGoing) {
             Box.boxDrawing(gameField);
             if(!boxEmpty){
                 for(byte i = 0; i < 9; i++)
@@ -96,17 +98,16 @@ public class Game {
                 boxEmpty = true;
             }
             userInput();
+            userWin();
             computerMove();
-            if(userLose()==GameStatus.LOST) { winningStatus(GameStatus.LOST); break;}
-            else if(userWin()==GameStatus.WON) { winningStatus(GameStatus.WON); break;}
-            else if(isDraw()==GameStatus.DRAW) { winningStatus(GameStatus.DRAW); break;}
+            userLose();
+            isDraw();
         }
     }
 
     enum GameStatus {
         WON,
         LOST,
-        DRAW,
-        GOING
+        DRAW
     }
 }

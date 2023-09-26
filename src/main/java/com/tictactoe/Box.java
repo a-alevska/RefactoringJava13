@@ -1,6 +1,10 @@
 package com.tictactoe;
 
 public class Box {
+
+    private Box(){
+        throw new IllegalStateException("Utils class");
+    }
     protected static void boxDrawing(char[] gameField){
         System.out.println();
         for(byte i = 0; i < 2; i++){
