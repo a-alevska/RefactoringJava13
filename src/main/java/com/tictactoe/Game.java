@@ -5,8 +5,13 @@ import java.util.Scanner;
 public class Game {
     private static final Scanner scan = new Scanner(System.in);
     private static final String ENDGAME_TEMPLATE = "\nCreated by Shreyas Saha. Thanks for playing!";
+    private final char[] gameField = new char[]{'1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-    protected void userInput(char[] gameField){
+    public Game(){
+        System.out.println("Enter box number to select. Enjoy!\n");
+    }
+
+    protected void userInput(){
         byte input;
         while (true) {
             input = scan.nextByte();
@@ -23,7 +28,7 @@ public class Game {
         }
     }
 
-    protected void computerMove(char[] gameField){
+    protected void computerMove(){
         byte rand;
         while (true) {
             rand = (byte) (Math.random() * (9 - 1 + 1) + 1);
@@ -34,14 +39,14 @@ public class Game {
         }
     }
 
-    protected GameStatus userWin(char[] gameField){
-        if(Game.isWin(gameField)){
+    protected GameStatus userWin(){
+        if(isAllTaken('X')){
             return GameStatus.WON;
         }
-        else return GameStatus.DRAW;
+        else return GameStatus.GOING;
     }
 
-    protected GameStatus isDraw(char[] gameField){
+    protected GameStatus isDraw(){
         boolean boxAvailable = false;
         for(byte i=0; i<9; i++){
             if(gameField[i] != 'X' && gameField[i] != 'O'){
@@ -52,24 +57,24 @@ public class Game {
         if(!boxAvailable){
             return GameStatus.DRAW;
         }
-        else return GameStatus.WON;
+        else return GameStatus.GOING;
     }
 
-    protected GameStatus userLose(char[] gameField){
-        if(isWin(gameField)){
+    protected GameStatus userLose(){
+        if(isAllTaken('O')){
             return GameStatus.LOST;
-        }else return GameStatus.DRAW;
+        }else return GameStatus.GOING;
     }
 
-    protected static boolean isWin(char[] gameField){
-        return (gameField[0]=='O' && gameField[1]=='O' && gameField[2]=='O') ||  //first string
-                (gameField[3]=='O' && gameField[4]=='O' && gameField[5]=='O') || //second string
-                (gameField[6]=='O' && gameField[7]=='O' && gameField[8]=='O') || //third string
-                (gameField[0]=='O' && gameField[3]=='O' && gameField[6]=='O') || //first row
-                (gameField[1]=='O' && gameField[4]=='O' && gameField[7]=='O') || //second row
-                (gameField[2]=='O' && gameField[5]=='O' && gameField[8]=='O') || //third row
-                (gameField[0]=='O' && gameField[4]=='O' && gameField[8]=='O') || //left diagonal
-                (gameField[2]=='O' && gameField[4]=='O' && gameField[6]=='O');   //right diagonal
+    protected boolean isAllTaken(char symbol){
+        return (gameField[0]==symbol && gameField[1]==symbol && gameField[2]==symbol) ||  //first string
+                (gameField[3]==symbol && gameField[4]==symbol && gameField[5]==symbol) || //second string
+                (gameField[6]==symbol && gameField[7]==symbol && gameField[8]==symbol) || //third string
+                (gameField[0]==symbol && gameField[3]==symbol && gameField[6]==symbol) || //first row
+                (gameField[1]==symbol && gameField[4]==symbol && gameField[7]==symbol) || //second row
+                (gameField[2]==symbol && gameField[5]==symbol && gameField[8]==symbol) || //third row
+                (gameField[0]==symbol && gameField[4]==symbol && gameField[8]==symbol) || //left diagonal
+                (gameField[2]==symbol && gameField[4]==symbol && gameField[6]==symbol);   //right diagonal
     }
 
     protected void winningStatus(GameStatus gameStatus){
@@ -77,26 +82,31 @@ public class Game {
             case WON -> System.out.println("You won the game!"+ ENDGAME_TEMPLATE);
             case LOST -> System.out.println("You lost the game!"+ ENDGAME_TEMPLATE);
             case DRAW -> System.out.println("It's a draw!"+ ENDGAME_TEMPLATE);
+            default -> System.out.println("Something went wrong!");
+        }
+    }
+
+    protected void gameStatus(){
+        boolean boxEmpty = false;
+        while (true) {
+            Box.boxDrawing(gameField);
+            if(!boxEmpty){
+                for(byte i = 0; i < 9; i++)
+                    gameField[i] = ' ';
+                boxEmpty = true;
+            }
+            userInput();
+            computerMove();
+            if(userLose()==GameStatus.LOST) { winningStatus(GameStatus.LOST); break;}
+            else if(userWin()==GameStatus.WON) { winningStatus(GameStatus.WON); break;}
+            else if(isDraw()==GameStatus.DRAW) { winningStatus(GameStatus.DRAW); break;}
         }
     }
 
     enum GameStatus {
         WON,
         LOST,
-        DRAW
-    }
-
-    protected void game(char[] gameField){
-        boolean boxEmpty = false;
-        while (true) {
-            Box.boxDrawing();
-            if(!boxEmpty){
-                for(byte i = 0; i < 9; i++)
-                    gameField[i] = ' ';
-                boxEmpty = true;
-            }
-
-            userInput(gameField);
-        }
+        DRAW,
+        GOING
     }
 }

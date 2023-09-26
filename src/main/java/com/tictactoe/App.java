@@ -2,13 +2,9 @@ package com.tictactoe;
 
 public class App {
 
-    private static void gameInitiation(){
-        System.out.println("Enter box number to select. Enjoy!\n");
-        Box.boxDrawing();
-    }
+    private static Game game = new Game();
 
     public static void main(String[] args) {
-        gameInitiation();
-
+        game.gameStatus();
     }
 }
